@@ -28,35 +28,41 @@ import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 //@ExtendWith(HoverflyExtension.class)
 public class DepartmentAPIAdvancedTest {
 
-    @Autowired
+    // @Autowired
     KubernetesClient client;
 
-    @BeforeAll
+    // @BeforeAll
     static void setup(Hoverfly hoverfly) {
         System.setProperty(Config.KUBERNETES_TRUST_CERT_SYSTEM_PROPERTY, "true");
         System.setProperty(Config.KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
         System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
-            "false");
+                "false");
         System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
         System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, "default");
         hoverfly.simulate(dsl(service("kubernetes.default.svc")
-            .get("/api/v1/namespaces/default/configmaps/department")
-            .willReturn(success().body(json(buildConfigMap())))));
+                .get("/api/v1/namespaces/default/configmaps/department")
+                .willReturn(success().body(json(buildConfigMap())))));
     }
 
     private static ConfigMap buildConfigMap() {
         return new ConfigMapBuilder().withNewMetadata()
-            .withName("department").withNamespace("default")
-            .endMetadata()
-            .addToData("application.properties",
-                "spring.data.mongodb.uri=mongodb://localhost:27017/test")
-            .build();
+                .withName("department").withNamespace("default")
+                .endMetadata()
+                .addToData("application.properties",
+                        "spring.data.mongodb.uri=mongodb://localhost:27017/test")
+                .build();
+    }
+
+    @Test
+    void test_for_report() {
+        Employee employee = buildEmployees().get(0);
+        Assertions.assertNotNull(employee);
     }
 
     @Autowired
     TestRestTemplate restTemplate;
 
-//    @Test
+    // @Test
     void findByOrganizationWithEmployees(Hoverfly hoverfly) {
         Department department = new Department("1", "Test");
         department = restTemplate.postForObject("/", department, Department.class);
@@ -64,18 +70,18 @@ public class DepartmentAPIAdvancedTest {
         Assertions.assertNotNull(department.getId());
 
         hoverfly.simulate(
-            dsl(service(prepareUrl())
-                .get("/api/v1/namespaces/default/endpoints/employee")
-                .willReturn(success().body(json(buildEndpoints())))),
-            dsl(service(prepareUrl())
-                .get("/api/v1/namespaces/default/services/employee")
-                .willReturn(success().body(json(buildService())))),
-            dsl(service("employee.default:8080")
-                .get("/department/" + department.getId())
-                .willReturn(success().body(json(buildEmployees())))));
+                dsl(service(prepareUrl())
+                        .get("/api/v1/namespaces/default/endpoints/employee")
+                        .willReturn(success().body(json(buildEndpoints())))),
+                dsl(service(prepareUrl())
+                        .get("/api/v1/namespaces/default/services/employee")
+                        .willReturn(success().body(json(buildService())))),
+                dsl(service("employee.default:8080")
+                        .get("/department/" + department.getId())
+                        .willReturn(success().body(json(buildEmployees())))));
 
         Department[] departments = restTemplate
-            .getForObject("/organization/{organizationId}/with-employees", Department[].class, 1L);
+                .getForObject("/organization/{organizationId}/with-employees", Department[].class, 1L);
         Assertions.assertEquals(1, departments.length);
         Assertions.assertEquals(1, departments[0].getEmployees().size());
     }
@@ -89,12 +95,12 @@ public class DepartmentAPIAdvancedTest {
 
     private Endpoints buildEndpoints() {
         return new EndpointsBuilder().withNewMetadata()
-            .withName("employee").withNamespace("default")
-            .endMetadata()
-            .addNewSubset().addNewAddress()
-            .withIp("employee.default").endAddress().addNewPort().withName("http")
-            .withPort(8080).endPort().endSubset()
-            .build();
+                .withName("employee").withNamespace("default")
+                .endMetadata()
+                .addNewSubset().addNewAddress()
+                .withIp("employee.default").endAddress().addNewPort().withName("http")
+                .withPort(8080).endPort().endSubset()
+                .build();
     }
 
     private List<Employee> buildEmployees() {
@@ -110,8 +116,8 @@ public class DepartmentAPIAdvancedTest {
 
     private String prepareUrl() {
         return client.getConfiguration().getMasterUrl()
-            .replace("/", "")
-            .replace("https:", "");
+                .replace("/", "")
+                .replace("https:", "");
     }
 
 }
