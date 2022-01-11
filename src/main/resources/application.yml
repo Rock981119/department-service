@@ -15,6 +15,7 @@ spring:
 feign:
   employee:
     name: employee
+    url:
 
 logging:
   pattern: 
