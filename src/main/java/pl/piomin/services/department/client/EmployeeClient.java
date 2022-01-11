@@ -7,7 +7,7 @@ import pl.piomin.services.department.model.Employee;
 
 import java.util.List;
 
-@FeignClient(name = "employee")
+@FeignClient(name = "${feign.employee.name}", url = "${feign.employee.url}")
 public interface EmployeeClient {
 
     @GetMapping("/department/{departmentId}")
