@@ -69,7 +69,7 @@ public class DepartmentWithRestTemplateController {
 
     private List<Employee> findEmployeesByDepartment(String departmentId) {
         Employee[] employees = restTemplate
-                .getForObject("http://employee//department/{departmentId}", Employee[].class, departmentId);
+                .getForObject("http://employee/department/{departmentId}", Employee[].class, departmentId);
         return Arrays.asList(employees);
     }
 
