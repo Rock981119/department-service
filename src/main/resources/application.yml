@@ -3,15 +3,21 @@ spring:
     name: department
   data:
     mongodb:
-      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb.default/${MONGO_DATABASE}
+      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb.${NAMESPACE}/${MONGO_DATABASE}
   cloud:
     loadbalancer:
       ribbon:
         enabled: false
     kubernetes:
-      discovery:
-        all-namespaces: true
-
+      client:
+       namespace: ${NAMESPACE}
+      # discovery:
+      #   all-namespaces: true
+  # cloud:
+  #   kubernetes:
+  #    client:
+  #      namespace: ${NAMESPACE}
+       
 feign:
   employee:
     name: employee
